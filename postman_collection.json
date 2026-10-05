@@ -1,0 +1,224 @@
+{
+  "info": {
+    "name": "Order Fulfillment & Inventory Management Platform",
+    "description": "REST API collection for the Order Fulfillment & Inventory Management Platform. Set {{base_url}} (default http://localhost:8000) and run 'Login' to auto-populate {{access_token}} / {{refresh_token}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" },
+    { "key": "access_token", "value": "" },
+    { "key": "refresh_token", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"SecurePass123\",\n  \"full_name\": \"Admin User\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "pm.collectionVariables.set('access_token', data.access_token);",
+                  "pm.collectionVariables.set('refresh_token', data.refresh_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Refresh",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/auth/refresh", "host": ["{{base_url}}"], "path": ["api", "auth", "refresh"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}" },
+            "url": { "raw": "{{base_url}}/api/auth/logout", "host": ["{{base_url}}"], "path": ["api", "auth", "logout"] }
+          }
+        },
+        {
+          "name": "Me",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/auth/me", "host": ["{{base_url}}"], "path": ["api", "auth", "me"] } }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"SecurePass123\",\n  \"new_password\": \"NewSecurePass456\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/change-password", "host": ["{{base_url}}"], "path": ["api", "auth", "change-password"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"sku\": \"SKU-1001\",\n  \"name\": \"Widget\",\n  \"description\": \"A useful widget\",\n  \"price\": 19.99,\n  \"cost_price\": 9.5\n}" },
+            "url": { "raw": "{{base_url}}/api/products", "host": ["{{base_url}}"], "path": ["api", "products"] }
+          }
+        },
+        { "name": "List Products", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/products?page=1&page_size=20", "host": ["{{base_url}}"], "path": ["api", "products"], "query": [{"key":"page","value":"1"},{"key":"page_size","value":"20"}] } } },
+        { "name": "Get Product", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/products/1", "host": ["{{base_url}}"], "path": ["api", "products", "1"] } } },
+        { "name": "Update Product", "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n  \"price\": 24.99\n}"}, "url": { "raw": "{{base_url}}/api/products/1", "host": ["{{base_url}}"], "path": ["api", "products", "1"] } } },
+        { "name": "Activate Product", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/api/products/1/activate", "host": ["{{base_url}}"], "path": ["api", "products", "1", "activate"] } } },
+        { "name": "Deactivate Product", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/api/products/1/deactivate", "host": ["{{base_url}}"], "path": ["api", "products", "1", "deactivate"] } } }
+      ]
+    },
+    {
+      "name": "Warehouses",
+      "item": [
+        { "name": "Create Warehouse", "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n  \"name\": \"Main Warehouse\",\n  \"location\": \"New York, NY\",\n  \"capacity\": 10000\n}"}, "url": { "raw": "{{base_url}}/api/warehouses", "host": ["{{base_url}}"], "path": ["api", "warehouses"] } } },
+        { "name": "List Warehouses", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/warehouses", "host": ["{{base_url}}"], "path": ["api", "warehouses"] } } },
+        { "name": "Get Warehouse", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/warehouses/1", "host": ["{{base_url}}"], "path": ["api", "warehouses", "1"] } } },
+        { "name": "Update Warehouse", "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n  \"capacity\": 15000\n}"}, "url": { "raw": "{{base_url}}/api/warehouses/1", "host": ["{{base_url}}"], "path": ["api", "warehouses", "1"] } } },
+        { "name": "Activate Warehouse", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/api/warehouses/1/activate", "host": ["{{base_url}}"], "path": ["api", "warehouses", "1", "activate"] } } },
+        { "name": "Deactivate Warehouse", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/api/warehouses/1/deactivate", "host": ["{{base_url}}"], "path": ["api", "warehouses", "1", "deactivate"] } } }
+      ]
+    },
+    {
+      "name": "Inventory",
+      "item": [
+        { "name": "List Inventory", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/inventory?page=1&page_size=20", "host": ["{{base_url}}"], "path": ["api", "inventory"], "query": [{"key":"page","value":"1"},{"key":"page_size","value":"20"}] } } },
+        { "name": "Get Inventory for Product", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/inventory/1?warehouse_id=1", "host": ["{{base_url}}"], "path": ["api", "inventory", "1"], "query": [{"key":"warehouse_id","value":"1"}] } } },
+        { "name": "Low Stock", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/inventory/low-stock", "host": ["{{base_url}}"], "path": ["api", "inventory", "low-stock"] } } },
+        {
+          "name": "Adjust Inventory",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"product_id\": 1,\n  \"warehouse_id\": 1,\n  \"adjustment\": 100,\n  \"reason\": \"Initial purchase receipt\",\n  \"idempotency_key\": \"adjust-0001\"\n}" },
+            "url": { "raw": "{{base_url}}/api/inventory/adjust", "host": ["{{base_url}}"], "path": ["api", "inventory", "adjust"] }
+          }
+        },
+        {
+          "name": "Transfer Inventory",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"product_id\": 1,\n  \"from_warehouse_id\": 1,\n  \"to_warehouse_id\": 2,\n  \"quantity\": 10,\n  \"idempotency_key\": \"transfer-0001\"\n}" },
+            "url": { "raw": "{{base_url}}/api/inventory/transfer", "host": ["{{base_url}}"], "path": ["api", "inventory", "transfer"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"warehouse_id\": 1,\n  \"items\": [\n    { \"product_id\": 1, \"quantity\": 2, \"discount\": 0, \"tax\": 1.5 }\n  ],\n  \"idempotency_key\": \"order-0001\"\n}" },
+            "url": { "raw": "{{base_url}}/api/orders", "host": ["{{base_url}}"], "path": ["api", "orders"] }
+          }
+        },
+        { "name": "List Orders", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/orders?page=1&page_size=20&status=pending", "host": ["{{base_url}}"], "path": ["api", "orders"], "query": [{"key":"page","value":"1"},{"key":"page_size","value":"20"},{"key":"status","value":"pending"}] } } },
+        { "name": "Get Order", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/orders/1", "host": ["{{base_url}}"], "path": ["api", "orders", "1"] } } },
+        { "name": "Cancel Order", "request": { "method": "POST", "url": { "raw": "{{base_url}}/api/orders/1/cancel", "host": ["{{base_url}}"], "path": ["api", "orders", "1", "cancel"] } } },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"confirmed\",\n  \"note\": \"Payment verified\"\n}" },
+            "url": { "raw": "{{base_url}}/api/orders/1/status", "host": ["{{base_url}}"], "path": ["api", "orders", "1", "status"] }
+          }
+        },
+        {
+          "name": "Assign Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"agent_id\": 5\n}" },
+            "url": { "raw": "{{base_url}}/api/orders/1/assign", "host": ["{{base_url}}"], "path": ["api", "orders", "1", "assign"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Returns",
+      "item": [
+        {
+          "name": "Create Return",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"order_id\": 1,\n  \"reason\": \"Wrong size\",\n  \"items\": [ { \"order_item_id\": 1, \"quantity\": 1 } ]\n}" },
+            "url": { "raw": "{{base_url}}/api/returns", "host": ["{{base_url}}"], "path": ["api", "returns"] }
+          }
+        },
+        { "name": "Get Return", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/returns/1", "host": ["{{base_url}}"], "path": ["api", "returns", "1"] } } },
+        {
+          "name": "Update Return Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"approved\"\n}" },
+            "url": { "raw": "{{base_url}}/api/returns/1/status", "host": ["{{base_url}}"], "path": ["api", "returns", "1", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        { "name": "List Notifications", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/notifications?unread_only=false", "host": ["{{base_url}}"], "path": ["api", "notifications"], "query": [{"key":"unread_only","value":"false"}] } } },
+        { "name": "Mark Read", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/api/notifications/1/read", "host": ["{{base_url}}"], "path": ["api", "notifications", "1", "read"] } } },
+        { "name": "Mark All Read", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/api/notifications/read-all", "host": ["{{base_url}}"], "path": ["api", "notifications", "read-all"] } } }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        { "name": "Admin Dashboard", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/dashboard/admin", "host": ["{{base_url}}"], "path": ["api", "dashboard", "admin"] } } },
+        { "name": "Warehouse Manager Dashboard", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/dashboard/warehouse/1", "host": ["{{base_url}}"], "path": ["api", "dashboard", "warehouse", "1"] } } },
+        { "name": "Customer Dashboard", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/dashboard/customer", "host": ["{{base_url}}"], "path": ["api", "dashboard", "customer"] } } }
+      ]
+    }
+  ]
+}
